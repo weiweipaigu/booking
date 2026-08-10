@@ -4,264 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Booking | 瑋瑋老師的撒野記事錄</title>
-
-  <!-- Supabase 官方文件支援的 CDN 安裝方式 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
     :root {
-      --bg: #f7f5ef;
-      --card: #ffffff;
-      --text: #2f3a33;
-      --muted: #66756b;
-      --line: #dfe6df;
-      --accent: #5d7a67;
-      --accent-soft: #e8efe8;
-      --danger: #a65353;
-      --danger-soft: #f8eaea;
-      --success: #3f6d4b;
-      --success-soft: #e8f2ea;
-      --max: 820px;
-      --radius: 18px;
+      --bg:#f7f5ef;--card:#fff;--text:#2f3a33;--muted:#66756b;--line:#dfe6df;
+      --accent:#5d7a67;--accent-soft:#e8efe8;--danger:#a65353;--danger-soft:#f8eaea;
+      --success:#3f6d4b;--success-soft:#e8f2ea;--max:860px;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    .wrap {
-      width: min(92%, var(--max));
-      margin: 0 auto;
-    }
-
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(247, 245, 239, 0.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 0;
-      gap: 16px;
-    }
-
-    .brand {
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .menu {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .hero {
-      padding: 56px 0 24px;
-    }
-
-    .hero-box {
-      background: linear-gradient(135deg, #eef4ee, #fbfaf6);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 34px 28px;
-    }
-
-    h1, h2, h3 {
-      line-height: 1.25;
-      margin: 0 0 14px;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-    }
-
-    p {
-      margin: 0 0 12px;
-    }
-
-    .lead {
-      color: var(--muted);
-      max-width: 680px;
-    }
-
-    .section {
-      padding: 8px 0 28px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.04);
-    }
-
-    .event-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .event-item {
-      background: #fbfbf8;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 14px;
-    }
-
-    .event-label {
-      color: var(--muted);
-      font-size: 0.86rem;
-      margin-bottom: 2px;
-    }
-
-    .event-value {
-      font-weight: 600;
-    }
-
-    .remaining {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .remaining.full {
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    form {
-      display: grid;
-      gap: 16px;
-    }
-
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-
-    label {
-      font-weight: 600;
-    }
-
-    .required {
-      color: var(--danger);
-      margin-left: 3px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: #fff;
-      color: var(--text);
-      outline: none;
-    }
-
-    input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
-    .btn {
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      padding: 12px 20px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      width: fit-content;
-    }
-
-    .btn:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .message {
-      display: none;
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 14px;
-    }
-
-    .message.success {
-      display: block;
-      background: var(--success-soft);
-      color: var(--success);
-    }
-
-    .message.error {
-      display: block;
-      background: var(--danger-soft);
-      color: var(--danger);
-    }
-
-    .loading {
-      color: var(--muted);
-    }
-
-    footer {
-      padding: 18px 0 48px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 700px) {
-      .nav-inner {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .event-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-box,
-      .card {
-        padding: 20px;
-      }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+    a{color:inherit;text-decoration:none}
+    button,input,select{font:inherit}
+    .wrap{width:min(92%,var(--max));margin:0 auto}
+    .nav{position:sticky;top:0;z-index:10;background:rgba(247,245,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px}
+    .brand{font-weight:700}
+    .menu{display:flex;gap:18px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
+    .hero{padding:56px 0 24px}
+    .hero-box{background:linear-gradient(135deg,#eef4ee,#fbfaf6);border:1px solid var(--line);border-radius:28px;padding:34px 28px}
+    h1,h2,h3{line-height:1.25;margin:0 0 14px}
+    h1{font-size:clamp(2rem,5vw,3rem)}
+    p{margin:0 0 12px}
+    .lead{color:var(--muted)}
+    .section{padding:8px 0 28px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(0,0,0,.04)}
+    .event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+    .event-item,.participant-card{background:#fbfbf8;border:1px solid var(--line);border-radius:14px;padding:14px}
+    .event-label{color:var(--muted);font-size:.86rem}
+    .event-value{font-weight:600}
+    .remaining{display:inline-block;margin-top:14px;padding:7px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+    .remaining.full{background:var(--danger-soft);color:var(--danger)}
+    form{display:grid;gap:18px}
+    .field{display:grid;gap:6px}
+    label{font-weight:600}
+    .required{color:var(--danger);margin-left:3px}
+    input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text)}
+    input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+    .participants{display:grid;gap:12px}
+    .participant-card h3{font-size:1rem;margin-bottom:10px}
+    .participant-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .hint{color:var(--muted);font-size:.88rem}
+    .btn{border:1px solid var(--accent);border-radius:999px;padding:12px 20px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;width:fit-content}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .message{display:none;margin-top:16px;padding:12px 14px;border-radius:14px}
+    .message.success{display:block;background:var(--success-soft);color:var(--success)}
+    .message.error{display:block;background:var(--danger-soft);color:var(--danger)}
+    footer{padding:18px 0 48px;color:var(--muted);font-size:.92rem}
+    @media(max-width:700px){
+      .nav-inner{flex-direction:column;align-items:flex-start}
+      .event-grid,.participant-grid{grid-template-columns:1fr}
+      .hero-box,.card{padding:20px}
     }
   </style>
 </head>
-
 <body>
   <nav class="nav">
     <div class="wrap nav-inner">
@@ -279,7 +74,7 @@
     <div class="wrap">
       <div class="hero-box">
         <h1>活動報名 / Booking</h1>
-        <p class="lead">請確認活動資訊後填寫報名資料。此報名系統不需要註冊會員或登入。</p>
+        <p class="lead">請先確認活動資訊，再填寫聯絡人與所有參加者資料。報名不需要註冊會員。</p>
       </div>
     </div>
   </header>
@@ -289,37 +84,18 @@
       <div class="wrap">
         <article class="card">
           <h2>活動資訊</h2>
-          <div id="eventLoading" class="loading">正在讀取活動資訊…</div>
-
+          <div id="eventLoading">正在讀取活動資訊…</div>
           <div id="eventContent" hidden>
             <h3 id="eventTitle"></h3>
             <p id="eventDescription" class="lead"></p>
-
             <div class="event-grid">
-              <div class="event-item">
-                <div class="event-label">日期</div>
-                <div class="event-value" id="eventDate">—</div>
-              </div>
-
-              <div class="event-item">
-                <div class="event-label">時間</div>
-                <div class="event-value" id="eventTime">—</div>
-              </div>
-
-              <div class="event-item">
-                <div class="event-label">地點</div>
-                <div class="event-value" id="eventLocation">—</div>
-              </div>
-
-              <div class="event-item">
-                <div class="event-label">費用</div>
-                <div class="event-value" id="eventPrice">—</div>
-              </div>
+              <div class="event-item"><div class="event-label">日期</div><div class="event-value" id="eventDate"></div></div>
+              <div class="event-item"><div class="event-label">時間</div><div class="event-value" id="eventTime"></div></div>
+              <div class="event-item"><div class="event-label">地點</div><div class="event-value" id="eventLocation"></div></div>
+              <div class="event-item"><div class="event-label">費用</div><div class="event-value" id="eventPrice"></div></div>
             </div>
-
             <div id="remainingBadge" class="remaining"></div>
           </div>
-
           <div id="eventError" class="message error"></div>
         </article>
       </div>
@@ -328,33 +104,39 @@
     <section class="section">
       <div class="wrap">
         <article class="card">
-          <h2>報名資料</h2>
-
+          <h2>聯絡人資料</h2>
           <form id="bookingForm">
             <div class="field">
-              <label for="name">姓名<span class="required">*</span></label>
-              <input id="name" name="name" type="text" autocomplete="name" required maxlength="80" />
-            </div>
-
-            <div class="field">
-              <label for="birthday">生日</label>
-              <input id="birthday" name="birthday" type="date" />
+              <label for="contactName">聯絡人姓名<span class="required">*</span></label>
+              <input id="contactName" type="text" required maxlength="80">
             </div>
 
             <div class="field">
               <label for="phone">聯絡電話<span class="required">*</span></label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" required maxlength="40" />
+              <input id="phone" type="tel" required maxlength="40">
             </div>
 
             <div class="field">
               <label for="email">E-mail<span class="required">*</span></label>
-              <input id="email" name="email" type="email" autocomplete="email" required maxlength="160" />
+              <input id="email" type="email" required maxlength="160">
             </div>
 
             <div class="field">
               <label for="lineId">LINE ID</label>
-              <input id="lineId" name="lineId" type="text" maxlength="100" />
-              <div class="hint">若沒有 LINE ID，可留白。</div>
+              <input id="lineId" type="text" maxlength="100">
+            </div>
+
+            <div class="field">
+              <label for="quantity">參加人數<span class="required">*</span></label>
+              <select id="quantity" required>
+                <option value="1">1 人</option>
+              </select>
+              <div class="hint">依目前剩餘名額，自動限制可選人數。</div>
+            </div>
+
+            <div>
+              <h2>參加者資料</h2>
+              <div id="participants" class="participants"></div>
             </div>
 
             <button id="submitButton" class="btn" type="submit" disabled>送出報名</button>
@@ -367,186 +149,136 @@
   </main>
 
   <footer>
-    <div class="wrap">
-      © 2026 瑋瑋老師的撒野記事錄 · Booking Page
-    </div>
+    <div class="wrap">© 2026 瑋瑋老師的撒野記事錄 · Booking Page</div>
   </footer>
 
-  <script>
-    // -----------------------------------------------------
-    // Supabase 公開前端設定
-    // Legacy anon key 可放在前端，但安全性必須由 RLS / DB functions 控制。
-    // 千萬不要把 service_role / secret key 放在此檔案。
-    // -----------------------------------------------------
-    const SUPABASE_URL = "https://aexhjnpskprtvpqbxriy.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
+<script>
+const SUPABASE_URL="https://aexhjnpskprtvpqbxriy.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const params=new URLSearchParams(location.search);
+const eventId=Number(params.get("event"));
+const quantitySelect=document.getElementById("quantity");
+const participantsWrap=document.getElementById("participants");
+const submitButton=document.getElementById("submitButton");
+const formMessage=document.getElementById("formMessage");
+let currentEvent=null;
 
-    const params = new URLSearchParams(window.location.search);
-    const eventId = Number(params.get("event"));
+function formatDate(s){if(!s)return"—";const [y,m,d]=s.split("-");return`${y}/${m}/${d}`}
+function formatTime(s){return s?s.slice(0,5):""}
+function setMessage(msg,type){formMessage.textContent=msg;formMessage.className=`message ${type}`}
+function renderParticipantFields(count){
+  participantsWrap.innerHTML="";
+  for(let i=1;i<=count;i++){
+    const card=document.createElement("div");
+    card.className="participant-card";
+    card.innerHTML=`
+      <h3>參加者 ${i}</h3>
+      <div class="participant-grid">
+        <div class="field">
+          <label>姓名<span class="required">*</span></label>
+          <input class="participant-name" type="text" required maxlength="80">
+        </div>
+        <div class="field">
+          <label>生日</label>
+          <input class="participant-birthday" type="date">
+        </div>
+      </div>`;
+    participantsWrap.appendChild(card);
+  }
+}
+function updateQuantityOptions(remaining){
+  quantitySelect.innerHTML="";
+  const max=Math.max(0,Math.min(Number(remaining),20));
+  if(max===0){
+    const o=document.createElement("option");o.value="0";o.textContent="已額滿";quantitySelect.appendChild(o);
+    renderParticipantFields(0);return;
+  }
+  for(let i=1;i<=max;i++){
+    const o=document.createElement("option");o.value=String(i);o.textContent=`${i} 人`;quantitySelect.appendChild(o);
+  }
+  quantitySelect.value="1";
+  renderParticipantFields(1);
+}
+quantitySelect.addEventListener("change",()=>renderParticipantFields(Number(quantitySelect.value)));
 
-    const eventLoading = document.getElementById("eventLoading");
-    const eventContent = document.getElementById("eventContent");
-    const eventError = document.getElementById("eventError");
-    const remainingBadge = document.getElementById("remainingBadge");
-    const bookingForm = document.getElementById("bookingForm");
-    const submitButton = document.getElementById("submitButton");
-    const formMessage = document.getElementById("formMessage");
+async function loadEvent(){
+  if(!Number.isInteger(eventId)||eventId<=0){
+    document.getElementById("eventLoading").style.display="none";
+    const e=document.getElementById("eventError");e.textContent="網址缺少有效的活動編號。";e.style.display="block";return;
+  }
+  const {data,error}=await client.rpc("get_event_public",{p_event_id:eventId});
+  if(error||!data||data.length===0){
+    document.getElementById("eventLoading").style.display="none";
+    const e=document.getElementById("eventError");e.textContent="活動資訊讀取失敗或找不到活動。";e.style.display="block";return;
+  }
+  currentEvent=data[0];
+  document.getElementById("eventLoading").style.display="none";
+  document.getElementById("eventContent").hidden=false;
+  document.getElementById("eventTitle").textContent=currentEvent.title;
+  document.getElementById("eventDescription").textContent=currentEvent.description||"";
+  document.getElementById("eventDate").textContent=formatDate(currentEvent.event_date);
+  const st=formatTime(currentEvent.start_time),et=formatTime(currentEvent.end_time);
+  document.getElementById("eventTime").textContent=st&&et?`${st}–${et}`:(st||et||"—");
+  document.getElementById("eventLocation").textContent=currentEvent.location||"—";
+  document.getElementById("eventPrice").textContent=Number(currentEvent.price)>0?`NT$ ${Number(currentEvent.price).toLocaleString("zh-TW")}`:"請依活動說明";
 
-    let currentEvent = null;
+  const badge=document.getElementById("remainingBadge");
+  if(currentEvent.status!=="open"){
+    badge.textContent="目前未開放報名";badge.className="remaining full";submitButton.disabled=true;updateQuantityOptions(0);
+  }else if(Number(currentEvent.remaining)<=0){
+    badge.textContent="已額滿";badge.className="remaining full";submitButton.disabled=true;updateQuantityOptions(0);
+  }else{
+    badge.textContent=`剩餘 ${currentEvent.remaining} 名 / 總名額 ${currentEvent.capacity} 名`;
+    badge.className="remaining";updateQuantityOptions(currentEvent.remaining);submitButton.disabled=false;
+  }
+}
 
-    function formatDate(dateString) {
-      if (!dateString) return "—";
-      const [year, month, day] = dateString.split("-");
-      return `${year}/${month}/${day}`;
-    }
+document.getElementById("bookingForm").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  if(!currentEvent||submitButton.disabled)return;
 
-    function formatTime(timeString) {
-      if (!timeString) return "";
-      return timeString.slice(0, 5);
-    }
+  const participantNames=[...document.querySelectorAll(".participant-name")];
+  const participantBirthdays=[...document.querySelectorAll(".participant-birthday")];
+  const participants=participantNames.map((el,i)=>({
+    name:el.value.trim(),
+    birthday:participantBirthdays[i].value||null
+  }));
 
-    function setEventError(message) {
-      eventLoading.style.display = "none";
-      eventContent.hidden = true;
-      eventError.textContent = message;
-      eventError.className = "message error";
-      submitButton.disabled = true;
-    }
+  if(participants.some(p=>!p.name)){
+    setMessage("請填寫所有參加者姓名。","error");return;
+  }
 
-    function setFormMessage(message, type) {
-      formMessage.textContent = message;
-      formMessage.className = `message ${type}`;
-    }
+  submitButton.disabled=true;
+  submitButton.textContent="送出中…";
 
-    async function loadEvent() {
-      if (!Number.isInteger(eventId) || eventId <= 0) {
-        setEventError("網址缺少有效的活動編號。請從行事曆的活動連結進入報名頁。");
-        return;
-      }
+  const {data,error}=await client.rpc("submit_registration",{
+    p_event_id:eventId,
+    p_contact_name:document.getElementById("contactName").value.trim(),
+    p_phone:document.getElementById("phone").value.trim(),
+    p_email:document.getElementById("email").value.trim(),
+    p_line_id:document.getElementById("lineId").value.trim()||null,
+    p_participants:participants
+  });
 
-      const { data, error } = await client.rpc("get_event_public", {
-        p_event_id: eventId
-      });
+  if(error){
+    console.error(error);
+    setMessage(error.message||"報名送出失敗，請稍後再試。","error");
+    submitButton.textContent="送出報名";
+    await loadEvent();
+    if(currentEvent&&currentEvent.status==="open"&&Number(currentEvent.remaining)>0)submitButton.disabled=false;
+    return;
+  }
 
-      if (error) {
-        console.error(error);
-        setEventError("活動資訊讀取失敗。請稍後再試，或聯絡瑋瑋老師。");
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        setEventError("找不到這個活動，活動可能已移除。");
-        return;
-      }
-
-      currentEvent = data[0];
-
-      eventLoading.style.display = "none";
-      eventError.style.display = "none";
-      eventContent.hidden = false;
-
-      document.getElementById("eventTitle").textContent = currentEvent.title;
-      document.getElementById("eventDescription").textContent =
-        currentEvent.description || "";
-
-      document.getElementById("eventDate").textContent =
-        formatDate(currentEvent.event_date);
-
-      const start = formatTime(currentEvent.start_time);
-      const end = formatTime(currentEvent.end_time);
-      document.getElementById("eventTime").textContent =
-        start && end ? `${start}–${end}` : (start || end || "—");
-
-      document.getElementById("eventLocation").textContent =
-        currentEvent.location || "—";
-
-      document.getElementById("eventPrice").textContent =
-        Number(currentEvent.price) > 0
-          ? `NT$ ${Number(currentEvent.price).toLocaleString("zh-TW")}`
-          : "請依活動說明";
-
-      if (currentEvent.status !== "open") {
-        remainingBadge.textContent = "目前未開放報名";
-        remainingBadge.classList.add("full");
-        submitButton.disabled = true;
-      } else if (Number(currentEvent.remaining) <= 0) {
-        remainingBadge.textContent = "已額滿";
-        remainingBadge.classList.add("full");
-        submitButton.disabled = true;
-      } else {
-        remainingBadge.textContent =
-          `剩餘 ${currentEvent.remaining} 名 / 總名額 ${currentEvent.capacity} 名`;
-        remainingBadge.classList.remove("full");
-        submitButton.disabled = false;
-      }
-    }
-
-    bookingForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      if (!currentEvent || submitButton.disabled) return;
-
-      formMessage.className = "message";
-      formMessage.textContent = "";
-
-      submitButton.disabled = true;
-      submitButton.textContent = "送出中…";
-
-      const name = document.getElementById("name").value.trim();
-      const birthdayValue = document.getElementById("birthday").value;
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const lineId = document.getElementById("lineId").value.trim();
-
-      const { data, error } = await client.rpc("submit_registration", {
-        p_event_id: eventId,
-        p_name: name,
-        p_birthday: birthdayValue || null,
-        p_phone: phone,
-        p_email: email,
-        p_line_id: lineId || null
-      });
-
-      if (error) {
-        console.error(error);
-
-        let message = "報名送出失敗，請稍後再試。";
-        const raw = (error.message || "").toLowerCase();
-
-        if (raw.includes("額滿")) {
-          message = "很抱歉，此活動剛剛已額滿。";
-        } else if (raw.includes("未開放")) {
-          message = "此活動目前未開放報名。";
-        } else if (error.message) {
-          message = error.message;
-        }
-
-        setFormMessage(message, "error");
-        submitButton.textContent = "送出報名";
-
-        await loadEvent();
-
-        if (currentEvent && currentEvent.status === "open" && Number(currentEvent.remaining) > 0) {
-          submitButton.disabled = false;
-        }
-        return;
-      }
-
-      bookingForm.reset();
-      setFormMessage(
-        `報名成功！您的報名編號為 ${data}。請留意後續活動通知。`,
-        "success"
-      );
-
-      submitButton.textContent = "已完成報名";
-
-      // 重新載入活動，讓剩餘名額即時更新。
-      await loadEvent();
-    });
-
-    loadEvent();
-  </script>
+  const qty=participants.length;
+  document.getElementById("bookingForm").reset();
+  renderParticipantFields(1);
+  setMessage(`報名成功！共 ${qty} 人，您的報名編號為 ${data}。請留意後續活動通知。`,"success");
+  submitButton.textContent="已完成報名";
+  await loadEvent();
+});
+loadEvent();
+</script>
 </body>
 </html>
