@@ -274,7 +274,7 @@ document.getElementById("bookingForm").addEventListener("submit",async(e)=>{
   const qty=participants.length;
   document.getElementById("bookingForm").reset();
   renderParticipantFields(1);
-  setMessage(`報名成功！共 ${qty} 人，您的報名編號為 ${data}。請留意後續活動通知。`,"success");
+  setMessage(`報名成功！共 ${qty} 人，您的報名編號為 ${data}。系統將寄送報名確認信至您填寫的 E-mail，請留意收件匣與垃圾郵件匣。`,"success");
   submitButton.textContent="已完成報名";
   await loadEvent();
 });
