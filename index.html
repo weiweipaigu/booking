@@ -3,69 +3,536 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Booking | 瑋瑋老師的撒野記事錄</title>
+
+  <title>活動報名｜瑋瑋老師的撒野記事錄</title>
+  <meta name="description" content="瑋瑋老師活動報名頁。請確認活動日期、時間、地點、費用與活動說明後，填寫聯絡人及參加者資料完成報名。" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://booking.weiweipaigu.com/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:site_name" content="瑋瑋老師的撒野記事錄" />
+  <meta property="og:title" content="活動報名｜瑋瑋老師的撒野記事錄" />
+  <meta property="og:description" content="確認活動資訊後，填寫聯絡人及參加者資料完成報名。" />
+  <meta property="og:url" content="https://booking.weiweipaigu.com/" />
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
-      --bg:#f7f5ef;--card:#fff;--text:#2f3a33;--muted:#66756b;--line:#dfe6df;
-      --accent:#5d7a67;--accent-soft:#e8efe8;--danger:#a65353;--danger-soft:#f8eaea;
-      --success:#3f6d4b;--success-soft:#e8f2ea;--max:860px;
+      --bg:#f7f5ef;
+      --card:#fff;
+      --text:#2f3a33;
+      --muted:#66756b;
+      --line:#dfe6df;
+      --accent:#5d7a67;
+      --accent-soft:#e8efe8;
+      --danger:#a65353;
+      --danger-soft:#f8eaea;
+      --success:#3f6d4b;
+      --success-soft:#e8f2ea;
+      --warning:#8a6a1f;
+      --warning-soft:#fff5d9;
+      --max:860px;
+      --radius:18px;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
-    a{color:inherit;text-decoration:none}
-    button,input,select{font:inherit}
-    .wrap{width:min(92%,var(--max));margin:0 auto}
-    .nav{position:sticky;top:0;z-index:10;background:rgba(247,245,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px}
-    .brand{font-weight:700}
-    .menu{display:flex;gap:18px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
-    .hero{padding:56px 0 24px}
-    .hero-box{background:linear-gradient(135deg,#eef4ee,#fbfaf6);border:1px solid var(--line);border-radius:28px;padding:34px 28px}
-    h1,h2,h3{line-height:1.25;margin:0 0 14px}
-    h1{font-size:clamp(2rem,5vw,3rem)}
-    p{margin:0 0 12px}
-    .lead{color:var(--muted)}
-    .section{padding:8px 0 28px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 28px rgba(0,0,0,.04)}
-    .event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
-    .event-item,.participant-card{background:#fbfbf8;border:1px solid var(--line);border-radius:14px;padding:14px}
-    .event-label{color:var(--muted);font-size:.86rem}
-    .event-value{font-weight:600}
-    .remaining{display:inline-block;margin-top:14px;padding:7px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
-    .remaining.full{background:var(--danger-soft);color:var(--danger)}
-    form{display:grid;gap:18px}
-    .field{display:grid;gap:6px}
-    label{font-weight:600}
-    .required{color:var(--danger);margin-left:3px}
-    input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text)}
-    input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-    .participants{display:grid;gap:12px}
-    .participant-card h3{font-size:1rem;margin-bottom:10px}
-    .participant-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .hint{color:var(--muted);font-size:.88rem}
-    .btn{border:1px solid var(--accent);border-radius:999px;padding:12px 20px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;width:fit-content}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    .message{display:none;margin-top:16px;padding:12px 14px;border-radius:14px}
-    .message.success{display:block;background:var(--success-soft);color:var(--success)}
-    .message.error{display:block;background:var(--danger-soft);color:var(--danger)}
-    footer{padding:18px 0 48px;color:var(--muted);font-size:.92rem}
-    @media(max-width:700px){
-      .nav-inner{flex-direction:column;align-items:flex-start}
-      .event-grid,.participant-grid{grid-template-columns:1fr}
-      .hero-box,.card{padding:20px}
+
+    * { box-sizing:border-box; }
+
+    html { scroll-behavior:smooth; }
+
+    body {
+      margin:0;
+      font-family:"Segoe UI","Noto Sans TC",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.7;
+    }
+
+    a { color:inherit; text-decoration:none; }
+    button,input,select,textarea { font:inherit; }
+
+    .wrap {
+      width:min(92%,var(--max));
+      margin:0 auto;
+    }
+
+    /* Navbar */
+    .nav {
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(247,245,239,.94);
+      backdrop-filter:blur(8px);
+      border-bottom:1px solid var(--line);
+    }
+
+    .nav-inner {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 0;
+      gap:18px;
+    }
+
+    .brand {
+      font-weight:700;
+      letter-spacing:.02em;
+      white-space:nowrap;
+      flex-shrink:0;
+    }
+
+    .menu {
+      display:flex;
+      align-items:center;
+      gap:18px;
+      flex-wrap:nowrap;
+      white-space:nowrap;
+      font-size:.95rem;
+      color:var(--muted);
+    }
+
+    .menu a:hover { color:var(--accent); }
+
+    /* Hero */
+    .hero { padding:50px 0 22px; }
+
+    .hero-box {
+      background:linear-gradient(135deg,#eef4ee,#fbfaf6);
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:32px 28px;
+    }
+
+    h1,h2,h3 {
+      line-height:1.3;
+      margin:0 0 12px;
+    }
+
+    h1 { font-size:clamp(2rem,5vw,3rem); }
+    p { margin:0 0 12px; }
+    .lead { color:var(--muted); }
+
+    .step-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:18px;
+    }
+
+    .step-chip {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid var(--line);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:700;
+    }
+
+    .step-chip strong { color:var(--accent); }
+
+    /* Content */
+    .section { padding:8px 0 24px; }
+
+    .card {
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:24px;
+      box-shadow:0 10px 28px rgba(0,0,0,.04);
+    }
+
+    .section-heading {
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .section-heading h2 { margin:0; }
+
+    .back-link {
+      color:var(--accent);
+      font-size:.9rem;
+      font-weight:700;
+    }
+
+    /* Event info */
+    .event-title {
+      font-size:1.3rem;
+      margin-bottom:8px;
+    }
+
+    .event-description {
+      white-space:pre-line;
+      color:#465148;
+      margin-top:12px;
+    }
+
+    .event-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .event-item {
+      background:#fbfbf8;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      min-width:0;
+    }
+
+    .event-label {
+      color:var(--muted);
+      font-size:.8rem;
+      font-weight:700;
+      margin-bottom:2px;
+    }
+
+    .event-value {
+      font-weight:650;
+      overflow-wrap:anywhere;
+    }
+
+    .remaining {
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-top:14px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:700;
+      font-size:.9rem;
+    }
+
+    .remaining.low {
+      background:var(--warning-soft);
+      color:var(--warning);
+    }
+
+    .remaining.full {
+      background:var(--danger-soft);
+      color:var(--danger);
+    }
+
+    .status-dot {
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      display:inline-block;
+      background:currentColor;
+      opacity:.9;
+    }
+
+    .fee-note {
+      margin-top:12px;
+      color:var(--muted);
+      font-size:.88rem;
+    }
+
+    /* Form */
+    form {
+      display:grid;
+      gap:20px;
+    }
+
+    .form-section {
+      display:grid;
+      gap:14px;
+    }
+
+    .form-section + .form-section {
+      padding-top:20px;
+      border-top:1px solid var(--line);
+    }
+
+    .form-section h2 {
+      font-size:1.2rem;
+      margin:0;
+    }
+
+    .field {
+      display:grid;
+      gap:6px;
+    }
+
+    label { font-weight:650; }
+
+    .required {
+      color:var(--danger);
+      margin-left:3px;
+    }
+
+    input,select,textarea {
+      width:100%;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      color:var(--text);
+    }
+
+    textarea {
+      min-height:120px;
+      resize:vertical;
+      line-height:1.6;
+    }
+
+    input:focus,select:focus,textarea:focus {
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px var(--accent-soft);
+    }
+
+    .hint {
+      color:var(--muted);
+      font-size:.86rem;
+    }
+
+    .participants {
+      display:grid;
+      gap:12px;
+    }
+
+    .participant-card {
+      background:#fbfbf8;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .participant-card h3 {
+      font-size:1rem;
+      margin-bottom:10px;
+    }
+
+    .participant-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .consent-row {
+      display:flex;
+      align-items:flex-start;
+      gap:9px;
+      padding:13px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fbfbf8;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .consent-row input {
+      width:auto;
+      margin-top:6px;
+      flex:0 0 auto;
+    }
+
+    .consent-row a {
+      color:var(--accent);
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    .btn {
+      border:1px solid var(--accent);
+      border-radius:999px;
+      padding:12px 20px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:750;
+      cursor:pointer;
+      width:fit-content;
+      transition:transform .15s ease;
+    }
+
+    .btn:hover:not(:disabled) { transform:translateY(-1px); }
+
+    .btn:disabled {
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .message {
+      display:none;
+      margin-top:16px;
+      padding:12px 14px;
+      border-radius:14px;
+    }
+
+    .message.success {
+      display:block;
+      background:var(--success-soft);
+      color:var(--success);
+    }
+
+    .message.error {
+      display:block;
+      background:var(--danger-soft);
+      color:var(--danger);
+    }
+
+    /* Success state */
+    .success-card {
+      display:none;
+      background:var(--card);
+      border:1px solid #cfe0d2;
+      border-radius:22px;
+      padding:26px;
+      box-shadow:0 10px 28px rgba(0,0,0,.04);
+    }
+
+    .success-card.show { display:block; }
+
+    .success-icon {
+      width:52px;
+      height:52px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--success-soft);
+      color:var(--success);
+      font-size:1.5rem;
+      font-weight:900;
+      margin-bottom:14px;
+    }
+
+    .reference-box {
+      margin:16px 0;
+      padding:14px;
+      border-radius:14px;
+      background:#fbfbf8;
+      border:1px solid var(--line);
+    }
+
+    .reference-label {
+      color:var(--muted);
+      font-size:.8rem;
+      font-weight:700;
+      margin-bottom:5px;
+    }
+
+    .reference-value {
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      overflow-wrap:anywhere;
+      font-size:.98rem;
+      font-weight:700;
+    }
+
+    .success-actions {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .btn.secondary {
+      background:transparent;
+      color:var(--accent);
+    }
+
+    footer {
+      padding:20px 0 48px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .footer-inner {
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    .footer-links {
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .footer-links a {
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    @media(max-width:700px) {
+      .nav-inner {
+        display:block;
+        padding:10px 0 8px;
+      }
+
+      .brand {
+        display:block;
+        font-size:.96rem;
+        margin-bottom:6px;
+      }
+
+      .menu {
+        width:100%;
+        gap:18px;
+        overflow-x:auto;
+        padding-bottom:2px;
+        font-size:.88rem;
+        scrollbar-width:none;
+        -webkit-overflow-scrolling:touch;
+      }
+
+      .menu::-webkit-scrollbar { display:none; }
+
+      .hero {
+        padding:30px 0 20px;
+      }
+
+      .hero-box,.card,.success-card {
+        padding:20px;
+      }
+
+      .event-grid,.participant-grid {
+        grid-template-columns:1fr;
+      }
+
+      .step-row {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+
+      .success-actions {
+        display:grid;
+      }
+
+      .success-actions .btn {
+        width:100%;
+      }
+
+      .footer-inner {
+        display:grid;
+      }
     }
   </style>
 </head>
+
 <body>
   <nav class="nav">
     <div class="wrap nav-inner">
       <div class="brand">瑋瑋老師的撒野記事錄</div>
-      <div class="menu">
-        <a href="https://weiweipaigu.github.io/home/">Home</a>
-        <a href="https://weiweipaigu.github.io/calendar/">Calendar</a>
-        <a href="https://weiweipaigu.github.io/shopping/">Shopping</a>
-        <a href="https://weiweipaigu.github.io/about/">About</a>
+      <div class="menu" aria-label="主選單">
+        <a href="https://www.weiweipaigu.com">Home</a>
+        <a href="https://calendar.weiweipaigu.com">Calendar</a>
+        <a href="https://shopping.weiweipaigu.com">Shopping</a>
+        <a href="https://about.weiweipaigu.com">About</a>
       </div>
     </div>
   </nav>
@@ -74,7 +541,14 @@
     <div class="wrap">
       <div class="hero-box">
         <h1>活動報名 / Booking</h1>
-        <p class="lead">請先確認活動資訊，再填寫聯絡人與所有參加者資料。報名不需要註冊會員。</p>
+        <p class="lead">先確認活動內容，再填寫聯絡人與參加者資料。報名不需要註冊會員，送出成功後會取得一組專屬報名編號。</p>
+
+        <div class="step-row" aria-label="報名步驟">
+          <span class="step-chip"><strong>1</strong> 確認活動</span>
+          <span class="step-chip"><strong>2</strong> 填寫資料</span>
+          <span class="step-chip"><strong>3</strong> 送出報名</span>
+          <span class="step-chip"><strong>4</strong> 收取確認信</span>
+        </div>
       </div>
     </div>
   </header>
@@ -83,202 +557,433 @@
     <section class="section">
       <div class="wrap">
         <article class="card">
-          <h2>活動資訊</h2>
-          <div id="eventLoading">正在讀取活動資訊…</div>
-          <div id="eventContent" hidden>
-            <h3 id="eventTitle"></h3>
-            <p id="eventDescription" class="lead"></p>
-            <div class="event-grid">
-              <div class="event-item"><div class="event-label">日期</div><div class="event-value" id="eventDate"></div></div>
-              <div class="event-item"><div class="event-label">時間</div><div class="event-value" id="eventTime"></div></div>
-              <div class="event-item"><div class="event-label">地點</div><div class="event-value" id="eventLocation"></div></div>
-              <div class="event-item"><div class="event-label">費用</div><div class="event-value" id="eventPrice"></div></div>
-            </div>
-            <div id="remainingBadge" class="remaining"></div>
+          <div class="section-heading">
+            <h2>活動資訊</h2>
+            <a class="back-link" href="https://calendar.weiweipaigu.com">← 回活動行事曆</a>
           </div>
+
+          <div id="eventLoading">正在讀取活動資訊…</div>
+
+          <div id="eventContent" hidden>
+            <h3 id="eventTitle" class="event-title"></h3>
+
+            <div class="event-grid">
+              <div class="event-item">
+                <div class="event-label">日期</div>
+                <div class="event-value" id="eventDate"></div>
+              </div>
+
+              <div class="event-item">
+                <div class="event-label">時間</div>
+                <div class="event-value" id="eventTime"></div>
+              </div>
+
+              <div class="event-item">
+                <div class="event-label">地點</div>
+                <div class="event-value" id="eventLocation"></div>
+              </div>
+
+              <div class="event-item">
+                <div class="event-label">費用</div>
+                <div class="event-value" id="eventPrice"></div>
+              </div>
+            </div>
+
+            <div id="remainingBadge" class="remaining"></div>
+            <p class="fee-note">每場活動的計價方式可能不同，實際收費對象與方式請以活動說明為準。</p>
+
+            <div id="eventDescription" class="event-description"></div>
+          </div>
+
           <div id="eventError" class="message error"></div>
         </article>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="registrationSection">
       <div class="wrap">
-        <article class="card">
-          <h2>聯絡人資料</h2>
+        <article class="card" id="formCard">
           <form id="bookingForm">
-            <div class="field">
-              <label for="contactName">聯絡人姓名<span class="required">*</span></label>
-              <input id="contactName" type="text" required maxlength="80">
-            </div>
+            <section class="form-section">
+              <h2>聯絡人資料</h2>
 
-            <div class="field">
-              <label for="phone">聯絡電話<span class="required">*</span></label>
-              <input id="phone" type="tel" required maxlength="40">
-            </div>
+              <div class="field">
+                <label for="contactName">聯絡人姓名<span class="required">*</span></label>
+                <input id="contactName" type="text" required maxlength="80" autocomplete="name">
+              </div>
 
-            <div class="field">
-              <label for="email">E-mail<span class="required">*</span></label>
-              <input id="email" type="email" required maxlength="160">
-            </div>
+              <div class="field">
+                <label for="phone">聯絡電話<span class="required">*</span></label>
+                <input id="phone" type="tel" required maxlength="40" autocomplete="tel">
+              </div>
 
-            <div class="field">
-              <label for="lineId">LINE ID</label>
-              <input id="lineId" type="text" maxlength="100">
-            </div>
+              <div class="field">
+                <label for="email">E-mail<span class="required">*</span></label>
+                <input id="email" type="email" required maxlength="160" autocomplete="email">
+                <div class="hint">報名確認信會寄到這個信箱，請確認拼字正確。</div>
+              </div>
 
-            <div class="field">
-              <label for="quantity">參加人數<span class="required">*</span></label>
-              <select id="quantity" required>
-                <option value="1">1 人</option>
-              </select>
-              <div class="hint">依目前剩餘名額，自動限制可選人數。</div>
-            </div>
+              <div class="field">
+                <label for="lineId">LINE ID</label>
+                <input id="lineId" type="text" maxlength="100">
+              </div>
+            </section>
 
-            <div>
-              <h2>參加者資料</h2>
+            <section class="form-section">
+              <h2>參加人數與參加者</h2>
+
+              <div class="field">
+                <label for="quantity">參加人數<span class="required">*</span></label>
+                <select id="quantity" required>
+                  <option value="1">1 人</option>
+                </select>
+                <div class="hint">依目前剩餘名額自動限制可選人數；單筆最多 20 人。</div>
+              </div>
+
               <div id="participants" class="participants"></div>
-            </div>
+            </section>
+
+            <section class="form-section">
+              <h2>備註／其他需求</h2>
+
+              <div class="field">
+                <label for="note">備註（選填）</label>
+                <textarea
+                  id="note"
+                  maxlength="1000"
+                  placeholder="若有同行人數、特殊需求、包團需求，或其他想先讓瑋瑋老師知道的事情，可以寫在這裡。"
+                ></textarea>
+                <div class="hint"><span id="noteCount">0</span> / 1000</div>
+              </div>
+
+              <label class="consent-row">
+                <input id="consent" type="checkbox" required>
+                <span>
+                  我已閱讀並同意
+                  <a href="https://privacy.weiweipaigu.com" target="_blank" rel="noreferrer">隱私權政策</a>
+                  與
+                  <a href="https://terms.weiweipaigu.com" target="_blank" rel="noreferrer">服務條款</a>。
+                </span>
+              </label>
+            </section>
 
             <button id="submitButton" class="btn" type="submit" disabled>送出報名</button>
           </form>
 
           <div id="formMessage" class="message"></div>
         </article>
+
+        <article class="success-card" id="successCard" aria-live="polite">
+          <div class="success-icon">✓</div>
+          <h2>報名成功！</h2>
+          <p>系統已收到你的報名資料，確認信也會寄到剛才填寫的 E-mail。若沒有看到，請順手檢查垃圾郵件匣。</p>
+
+          <div class="reference-box">
+            <div class="reference-label">你的報名編號</div>
+            <div class="reference-value" id="successReference"></div>
+          </div>
+
+          <p class="hint">請保留這組編號。之後我們會加入「查詢我的報名」功能，屆時會使用這組編號搭配報名 E-mail 查詢。</p>
+
+          <div class="success-actions">
+            <button class="btn" id="copyReferenceButton" type="button">複製報名編號</button>
+            <a class="btn secondary" href="https://calendar.weiweipaigu.com">回活動行事曆</a>
+            <a class="btn secondary" href="https://www.weiweipaigu.com">回首頁</a>
+          </div>
+        </article>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="wrap">© 2026 瑋瑋老師的撒野記事錄 · Booking Page</div>
+    <div class="wrap footer-inner">
+      <div>© 2026 瑋瑋老師的撒野記事錄 · Booking</div>
+      <div class="footer-links">
+        <a href="https://privacy.weiweipaigu.com">隱私權政策</a>
+        <a href="https://terms.weiweipaigu.com">服務條款</a>
+      </div>
+    </div>
   </footer>
 
-<script>
-const SUPABASE_URL="https://aexhjnpskprtvpqbxriy.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
-const client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  <script>
+    const SUPABASE_URL = "https://aexhjnpskprtvpqbxriy.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const params=new URLSearchParams(location.search);
-const eventId=Number(params.get("event"));
-const quantitySelect=document.getElementById("quantity");
-const participantsWrap=document.getElementById("participants");
-const submitButton=document.getElementById("submitButton");
-const formMessage=document.getElementById("formMessage");
-let currentEvent=null;
+    const params = new URLSearchParams(location.search);
+    const eventId = Number(params.get("event"));
 
-function formatDate(s){if(!s)return"—";const [y,m,d]=s.split("-");return`${y}/${m}/${d}`}
-function formatTime(s){return s?s.slice(0,5):""}
-function setMessage(msg,type){formMessage.textContent=msg;formMessage.className=`message ${type}`}
-function renderParticipantFields(count){
-  participantsWrap.innerHTML="";
-  for(let i=1;i<=count;i++){
-    const card=document.createElement("div");
-    card.className="participant-card";
-    card.innerHTML=`
-      <h3>參加者 ${i}</h3>
-      <div class="participant-grid">
-        <div class="field">
-          <label>姓名<span class="required">*</span></label>
-          <input class="participant-name" type="text" required maxlength="80">
-        </div>
-        <div class="field">
-          <label>生日</label>
-          <input class="participant-birthday" type="date">
-        </div>
-      </div>`;
-    participantsWrap.appendChild(card);
-  }
-}
-function updateQuantityOptions(remaining){
-  quantitySelect.innerHTML="";
-  const max=Math.max(0,Math.min(Number(remaining),20));
-  if(max===0){
-    const o=document.createElement("option");o.value="0";o.textContent="已額滿";quantitySelect.appendChild(o);
-    renderParticipantFields(0);return;
-  }
-  for(let i=1;i<=max;i++){
-    const o=document.createElement("option");o.value=String(i);o.textContent=`${i} 人`;quantitySelect.appendChild(o);
-  }
-  quantitySelect.value="1";
-  renderParticipantFields(1);
-}
-quantitySelect.addEventListener("change",()=>renderParticipantFields(Number(quantitySelect.value)));
+    const quantitySelect = document.getElementById("quantity");
+    const participantsWrap = document.getElementById("participants");
+    const submitButton = document.getElementById("submitButton");
+    const formMessage = document.getElementById("formMessage");
+    const noteField = document.getElementById("note");
+    const noteCount = document.getElementById("noteCount");
+    const formCard = document.getElementById("formCard");
+    const successCard = document.getElementById("successCard");
+    const successReference = document.getElementById("successReference");
+    const copyReferenceButton = document.getElementById("copyReferenceButton");
 
-async function loadEvent(){
-  if(!Number.isInteger(eventId)||eventId<=0){
-    document.getElementById("eventLoading").style.display="none";
-    const e=document.getElementById("eventError");e.textContent="網址缺少有效的活動編號。";e.style.display="block";return;
-  }
-  const {data,error}=await client.rpc("get_event_public",{p_event_id:eventId});
-  if(error||!data||data.length===0){
-    document.getElementById("eventLoading").style.display="none";
-    const e=document.getElementById("eventError");e.textContent="活動資訊讀取失敗或找不到活動。";e.style.display="block";return;
-  }
-  currentEvent=data[0];
-  document.getElementById("eventLoading").style.display="none";
-  document.getElementById("eventContent").hidden=false;
-  document.getElementById("eventTitle").textContent=currentEvent.title;
-  document.getElementById("eventDescription").textContent=currentEvent.description||"";
-  document.getElementById("eventDate").textContent=formatDate(currentEvent.event_date);
-  const st=formatTime(currentEvent.start_time),et=formatTime(currentEvent.end_time);
-  document.getElementById("eventTime").textContent=st&&et?`${st}–${et}`:(st||et||"—");
-  document.getElementById("eventLocation").textContent=currentEvent.location||"—";
-  document.getElementById("eventPrice").textContent=Number(currentEvent.price)>0?`NT$ ${Number(currentEvent.price).toLocaleString("zh-TW")}`:"請依活動說明";
+    let currentEvent = null;
+    let lastPublicReference = "";
 
-  const badge=document.getElementById("remainingBadge");
-  if(currentEvent.status!=="open"){
-    badge.textContent="目前未開放報名";badge.className="remaining full";submitButton.disabled=true;updateQuantityOptions(0);
-  }else if(Number(currentEvent.remaining)<=0){
-    badge.textContent="已額滿";badge.className="remaining full";submitButton.disabled=true;updateQuantityOptions(0);
-  }else{
-    badge.textContent=`剩餘 ${currentEvent.remaining} 名 / 總名額 ${currentEvent.capacity} 名`;
-    badge.className="remaining";updateQuantityOptions(currentEvent.remaining);submitButton.disabled=false;
-  }
-}
+    function formatDate(s) {
+      if (!s) return "—";
+      const [y,m,d] = s.split("-");
+      return `${y}/${m}/${d}`;
+    }
 
-document.getElementById("bookingForm").addEventListener("submit",async(e)=>{
-  e.preventDefault();
-  if(!currentEvent||submitButton.disabled)return;
+    function formatTime(s) {
+      return s ? String(s).slice(0,5) : "";
+    }
 
-  const participantNames=[...document.querySelectorAll(".participant-name")];
-  const participantBirthdays=[...document.querySelectorAll(".participant-birthday")];
-  const participants=participantNames.map((el,i)=>({
-    name:el.value.trim(),
-    birthday:participantBirthdays[i].value||null
-  }));
+    function setMessage(msg,type) {
+      formMessage.textContent = msg;
+      formMessage.className = `message ${type}`;
+    }
 
-  if(participants.some(p=>!p.name)){
-    setMessage("請填寫所有參加者姓名。","error");return;
-  }
+    function clearMessage() {
+      formMessage.textContent = "";
+      formMessage.className = "message";
+    }
 
-  submitButton.disabled=true;
-  submitButton.textContent="送出中…";
+    function renderParticipantFields(count) {
+      participantsWrap.innerHTML = "";
 
-  const {data,error}=await client.rpc("submit_registration",{
-    p_event_id:eventId,
-    p_contact_name:document.getElementById("contactName").value.trim(),
-    p_phone:document.getElementById("phone").value.trim(),
-    p_email:document.getElementById("email").value.trim(),
-    p_line_id:document.getElementById("lineId").value.trim()||null,
-    p_participants:participants
-  });
+      for (let i = 1; i <= count; i += 1) {
+        const card = document.createElement("div");
+        card.className = "participant-card";
 
-  if(error){
-    console.error(error);
-    setMessage(error.message||"報名送出失敗，請稍後再試。","error");
-    submitButton.textContent="送出報名";
-    await loadEvent();
-    if(currentEvent&&currentEvent.status==="open"&&Number(currentEvent.remaining)>0)submitButton.disabled=false;
-    return;
-  }
+        card.innerHTML = `
+          <h3>參加者 ${i}</h3>
+          <div class="participant-grid">
+            <div class="field">
+              <label>姓名<span class="required">*</span></label>
+              <input class="participant-name" type="text" required maxlength="80" autocomplete="off">
+            </div>
 
-  const qty=participants.length;
-  document.getElementById("bookingForm").reset();
-  renderParticipantFields(1);
-  setMessage(`報名成功！共 ${qty} 人，您的報名編號為 ${data}。系統將寄送報名確認信至您填寫的 E-mail，請留意收件匣與垃圾郵件匣。`,"success");
-  submitButton.textContent="已完成報名";
-  await loadEvent();
-});
-loadEvent();
-</script>
+            <div class="field">
+              <label>生日</label>
+              <input class="participant-birthday" type="date">
+            </div>
+          </div>
+        `;
+
+        participantsWrap.appendChild(card);
+      }
+    }
+
+    function updateQuantityOptions(remaining) {
+      quantitySelect.innerHTML = "";
+
+      const max = Math.max(0, Math.min(Number(remaining), 20));
+
+      if (max === 0) {
+        const option = document.createElement("option");
+        option.value = "0";
+        option.textContent = "已額滿";
+        quantitySelect.appendChild(option);
+        renderParticipantFields(0);
+        return;
+      }
+
+      for (let i = 1; i <= max; i += 1) {
+        const option = document.createElement("option");
+        option.value = String(i);
+        option.textContent = `${i} 人`;
+        quantitySelect.appendChild(option);
+      }
+
+      quantitySelect.value = "1";
+      renderParticipantFields(1);
+    }
+
+    function feeText(event) {
+      const price = Number(event.price || 0);
+
+      if (price > 0) {
+        return `NT$ ${price.toLocaleString("zh-TW")} 起・詳見活動說明`;
+      }
+
+      return "詳見活動說明";
+    }
+
+    function updateAvailability(event) {
+      const badge = document.getElementById("remainingBadge");
+      const remaining = Number(event.remaining || 0);
+
+      if (event.status !== "open") {
+        badge.innerHTML = `<span class="status-dot"></span>目前未開放報名`;
+        badge.className = "remaining full";
+        submitButton.disabled = true;
+        updateQuantityOptions(0);
+        return;
+      }
+
+      if (remaining <= 0) {
+        badge.innerHTML = `<span class="status-dot"></span>已額滿`;
+        badge.className = "remaining full";
+        submitButton.disabled = true;
+        updateQuantityOptions(0);
+        return;
+      }
+
+      badge.innerHTML = `<span class="status-dot"></span>剩餘 ${remaining} 名 / 總名額 ${event.capacity} 名`;
+      badge.className = remaining <= 6 ? "remaining low" : "remaining";
+      updateQuantityOptions(remaining);
+      submitButton.disabled = false;
+    }
+
+    async function loadEvent() {
+      if (!Number.isInteger(eventId) || eventId <= 0) {
+        document.getElementById("eventLoading").style.display = "none";
+        const errorBox = document.getElementById("eventError");
+        errorBox.textContent = "網址缺少有效的活動編號，請回行事曆重新選擇活動。";
+        errorBox.style.display = "block";
+        submitButton.disabled = true;
+        return;
+      }
+
+      const { data, error } = await client.rpc("get_event_public", {
+        p_event_id: eventId
+      });
+
+      if (error || !data || data.length === 0) {
+        document.getElementById("eventLoading").style.display = "none";
+        const errorBox = document.getElementById("eventError");
+        errorBox.textContent = "活動資訊讀取失敗或找不到活動，請回行事曆重新確認。";
+        errorBox.style.display = "block";
+        submitButton.disabled = true;
+        return;
+      }
+
+      currentEvent = data[0];
+
+      document.getElementById("eventLoading").style.display = "none";
+      document.getElementById("eventContent").hidden = false;
+      document.getElementById("eventTitle").textContent = currentEvent.title;
+      document.getElementById("eventDescription").textContent =
+        currentEvent.description || "此活動尚未提供詳細說明。";
+
+      document.getElementById("eventDate").textContent =
+        formatDate(currentEvent.event_date);
+
+      const start = formatTime(currentEvent.start_time);
+      const end = formatTime(currentEvent.end_time);
+
+      document.getElementById("eventTime").textContent =
+        start && end ? `${start}–${end}` : (start || end || "—");
+
+      document.getElementById("eventLocation").textContent =
+        currentEvent.location || "—";
+
+      document.getElementById("eventPrice").textContent =
+        feeText(currentEvent);
+
+      updateAvailability(currentEvent);
+    }
+
+    quantitySelect.addEventListener("change", () => {
+      renderParticipantFields(Number(quantitySelect.value));
+    });
+
+    noteField.addEventListener("input", () => {
+      noteCount.textContent = String(noteField.value.length);
+    });
+
+    document.getElementById("bookingForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!currentEvent || submitButton.disabled) return;
+
+      clearMessage();
+
+      const participantNames = [...document.querySelectorAll(".participant-name")];
+      const participantBirthdays = [...document.querySelectorAll(".participant-birthday")];
+
+      const participants = participantNames.map((input, index) => ({
+        name: input.value.trim(),
+        birthday: participantBirthdays[index].value || null
+      }));
+
+      if (participants.some((participant) => !participant.name)) {
+        setMessage("請填寫所有參加者姓名。", "error");
+        return;
+      }
+
+      if (!document.getElementById("consent").checked) {
+        setMessage("請先閱讀並同意隱私權政策與服務條款。", "error");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "送出中…";
+
+      const { data, error } = await client.rpc("submit_registration_v2", {
+        p_event_id: eventId,
+        p_contact_name: document.getElementById("contactName").value.trim(),
+        p_phone: document.getElementById("phone").value.trim(),
+        p_email: document.getElementById("email").value.trim(),
+        p_line_id: document.getElementById("lineId").value.trim() || null,
+        p_participants: participants,
+        p_note: noteField.value.trim() || null
+      });
+
+      if (error) {
+        console.error(error);
+
+        let message = error.message || "報名送出失敗，請稍後再試。";
+
+        if (message.includes("剩餘名額不足")) {
+          message = "很抱歉，剛才送出時名額已經有所變動。請重新確認目前剩餘名額後再試一次。";
+        }
+
+        setMessage(message, "error");
+
+        submitButton.textContent = "送出報名";
+        await loadEvent();
+
+        if (
+          currentEvent &&
+          currentEvent.status === "open" &&
+          Number(currentEvent.remaining) > 0
+        ) {
+          submitButton.disabled = false;
+        }
+
+        return;
+      }
+
+      lastPublicReference = String(data || "");
+
+      successReference.textContent = lastPublicReference;
+      formCard.style.display = "none";
+      successCard.classList.add("show");
+
+      successCard.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+      await loadEvent();
+    });
+
+    copyReferenceButton.addEventListener("click", async () => {
+      if (!lastPublicReference) return;
+
+      try {
+        await navigator.clipboard.writeText(lastPublicReference);
+        copyReferenceButton.textContent = "已複製 ✓";
+
+        setTimeout(() => {
+          copyReferenceButton.textContent = "複製報名編號";
+        }, 1800);
+      } catch {
+        window.prompt("請複製你的報名編號：", lastPublicReference);
+      }
+    });
+
+    loadEvent();
+  </script>
 </body>
 </html>
