@@ -113,6 +113,35 @@
     p { margin:0 0 12px; }
     .lead { color:var(--muted); }
 
+    .hero-actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .hero-link {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid var(--accent);
+      background:var(--accent);
+      color:#fff;
+      font-weight:750;
+      transition:transform .15s ease, background-color .2s ease;
+    }
+
+    .hero-link:hover {
+      transform:translateY(-1px);
+    }
+
+    .hero-link.secondary {
+      background:transparent;
+      color:var(--accent);
+    }
+
     .step-row {
       display:flex;
       flex-wrap:wrap;
@@ -504,6 +533,15 @@
         grid-template-columns:1fr;
       }
 
+      .hero-actions {
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .hero-link {
+        width:100%;
+      }
+
       .step-row {
         display:grid;
         grid-template-columns:1fr 1fr;
@@ -542,6 +580,12 @@
       <div class="hero-box">
         <h1>活動報名 / Booking</h1>
         <p class="lead">先確認活動內容，再填寫聯絡人與參加者資料。報名不需要註冊會員，送出成功後會取得一組專屬報名編號。</p>
+
+        <div class="hero-actions">
+          <a class="hero-link secondary" href="https://booking.weiweipaigu.com/lookup/">
+            已經報名？查詢報名狀態
+          </a>
+        </div>
 
         <div class="step-row" aria-label="報名步驟">
           <span class="step-chip"><strong>1</strong> 確認活動</span>
