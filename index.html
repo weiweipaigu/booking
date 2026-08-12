@@ -425,6 +425,48 @@
 
     .success-card.show { display:block; }
 
+    .booking-mode-note {
+      margin:14px 0 16px;
+      padding:13px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fbfbf8;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .booking-mode-note.waitlist {
+      background:var(--warning-soft);
+      color:var(--warning);
+      border-color:#ead9ad;
+    }
+
+    .booking-mode-note a {
+      color:inherit;
+      font-weight:800;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    .success-detail {
+      margin:14px 0;
+      padding:14px 16px;
+      border-radius:14px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-weight:650;
+      white-space:pre-line;
+    }
+
+    .success-card.waitlist {
+      border-color:#ead9ad;
+    }
+
+    .success-card.waitlist .success-icon {
+      background:var(--warning-soft);
+      color:var(--warning);
+    }
+
     .success-icon {
       width:52px;
       height:52px;
@@ -711,6 +753,7 @@
               </label>
             </section>
 
+            <div id="bookingModeNote" class="booking-mode-note"></div>
             <button id="submitButton" class="btn" type="submit" disabled>送出報名</button>
           </form>
 
@@ -718,9 +761,10 @@
         </article>
 
         <article class="success-card" id="successCard" aria-live="polite">
-          <div class="success-icon">✓</div>
-          <h2>報名成功！</h2>
-          <p>系統已收到你的報名資料，確認信也會寄到剛才填寫的 E-mail。若沒有看到，請順手檢查垃圾郵件匣。</p>
+          <div class="success-icon" id="successIcon">✓</div>
+          <h2 id="successTitle">資料已送出</h2>
+          <p id="successMessage"></p>
+          <div id="successDetail" class="success-detail"></div>
 
           <div class="reference-box">
             <div class="reference-label">你的報名編號</div>
@@ -768,6 +812,10 @@
     const successCard = document.getElementById("successCard");
     const successReference = document.getElementById("successReference");
     const copyReferenceButton = document.getElementById("copyReferenceButton");
+    const bookingModeNote = document.getElementById("bookingModeNote");
+    const successTitle = document.getElementById("successTitle");
+    const successMessage = document.getElementById("successMessage");
+    const successDetail = document.getElementById("successDetail");
 
     let currentEvent = null;
     let lastPublicReference = "";
@@ -780,6 +828,17 @@
 
     function formatTime(s) {
       return s ? String(s).slice(0,5) : "";
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "—";
+      return new Intl.DateTimeFormat("zh-TW", {
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit",
+        hour:"2-digit",
+        minute:"2-digit"
+      }).format(new Date(value));
     }
 
     function setMessage(msg,type) {
@@ -818,19 +877,14 @@
       }
     }
 
-    function updateQuantityOptions(remaining) {
+    function updateQuantityOptions(event) {
+      const previous = Math.max(1, Number(quantitySelect.value || 1));
       quantitySelect.innerHTML = "";
 
-      const max = Math.max(0, Math.min(Number(remaining), 20));
-
-      if (max === 0) {
-        const option = document.createElement("option");
-        option.value = "0";
-        option.textContent = "已額滿";
-        quantitySelect.appendChild(option);
-        renderParticipantFields(0);
-        return;
-      }
+      // 最多仍為 20 人；同時不讓單筆人數超過活動總容量，
+      // 避免建立永遠不可能整組轉正的備取。
+      const capacity = Math.max(1, Number(event.capacity || 1));
+      const max = Math.min(capacity, 20);
 
       for (let i = 1; i <= max; i += 1) {
         const option = document.createElement("option");
@@ -839,8 +893,37 @@
         quantitySelect.appendChild(option);
       }
 
-      quantitySelect.value = "1";
-      renderParticipantFields(1);
+      quantitySelect.value = String(Math.min(previous, max));
+      renderParticipantFields(Number(quantitySelect.value));
+      updateBookingMode();
+    }
+
+    function updateBookingMode() {
+      if (!currentEvent || currentEvent.status !== "open") {
+        bookingModeNote.className = "booking-mode-note";
+        bookingModeNote.textContent = "此活動目前未開放報名。";
+        submitButton.disabled = true;
+        return;
+      }
+
+      const remaining = Number(currentEvent.remaining || 0);
+      const quantity = Number(quantitySelect.value || 1);
+
+      if (quantity <= remaining) {
+        bookingModeNote.className = "booking-mode-note";
+        bookingModeNote.textContent =
+          `目前尚有 ${remaining} 個正式名額。本次 ${quantity} 人送出後會進入「待付款」，並暫時占用名額；原則上請於 5 日內完成付款。`;
+        submitButton.textContent = "送出報名";
+      } else {
+        bookingModeNote.className = "booking-mode-note waitlist";
+        bookingModeNote.innerHTML =
+          `目前僅剩 <strong>${remaining}</strong> 個正式名額，本次報名為 <strong>${quantity}</strong> 人。` +
+          `這單會轉為<strong>備取</strong>，不占正式名額，請先不要匯款，並` +
+          `<a href="mailto:wesker.hung@outlook.com">與瑋瑋老師聯繫</a>。`;
+        submitButton.textContent = "送出備取";
+      }
+
+      submitButton.disabled = false;
     }
 
     function feeText(event) {
@@ -861,22 +944,20 @@
         badge.innerHTML = `<span class="status-dot"></span>目前未開放報名`;
         badge.className = "remaining full";
         submitButton.disabled = true;
-        updateQuantityOptions(0);
+        bookingModeNote.className = "booking-mode-note";
+        bookingModeNote.textContent = "此活動目前未開放報名。";
         return;
       }
 
       if (remaining <= 0) {
-        badge.innerHTML = `<span class="status-dot"></span>已額滿`;
+        badge.innerHTML = `<span class="status-dot"></span>正式名額已滿・可登記備取`;
         badge.className = "remaining full";
-        submitButton.disabled = true;
-        updateQuantityOptions(0);
-        return;
+      } else {
+        badge.innerHTML = `<span class="status-dot"></span>剩餘 ${remaining} 名 / 總名額 ${event.capacity} 名`;
+        badge.className = remaining <= 6 ? "remaining low" : "remaining";
       }
 
-      badge.innerHTML = `<span class="status-dot"></span>剩餘 ${remaining} 名 / 總名額 ${event.capacity} 名`;
-      badge.className = remaining <= 6 ? "remaining low" : "remaining";
-      updateQuantityOptions(remaining);
-      submitButton.disabled = false;
+      updateQuantityOptions(event);
     }
 
     async function loadEvent() {
@@ -930,6 +1011,7 @@
 
     quantitySelect.addEventListener("change", () => {
       renderParticipantFields(Number(quantitySelect.value));
+      updateBookingMode();
     });
 
     noteField.addEventListener("input", () => {
@@ -964,7 +1046,7 @@
       submitButton.disabled = true;
       submitButton.textContent = "送出中…";
 
-      const { data, error } = await client.rpc("submit_registration_v2", {
+      const { data, error } = await client.rpc("submit_registration_v3", {
         p_event_id: eventId,
         p_contact_name: document.getElementById("contactName").value.trim(),
         p_phone: document.getElementById("phone").value.trim(),
@@ -979,8 +1061,8 @@
 
         let message = error.message || "報名送出失敗，請稍後再試。";
 
-        if (message.includes("剩餘名額不足")) {
-          message = "很抱歉，剛才送出時名額已經有所變動。請重新確認目前剩餘名額後再試一次。";
+        if (message.includes("未開放報名")) {
+          message = "此活動目前已停止接受新的報名與備取。";
         }
 
         setMessage(message, "error");
@@ -988,20 +1070,37 @@
         submitButton.textContent = "送出報名";
         await loadEvent();
 
-        if (
-          currentEvent &&
-          currentEvent.status === "open" &&
-          Number(currentEvent.remaining) > 0
-        ) {
-          submitButton.disabled = false;
+        if (currentEvent && currentEvent.status === "open") {
+          updateBookingMode();
         }
 
         return;
       }
 
-      lastPublicReference = String(data || "");
+      const result = data || {};
+      lastPublicReference = String(result.public_reference || "");
 
       successReference.textContent = lastPublicReference;
+      successCard.classList.remove("waitlist");
+
+      if (result.status === "waitlisted") {
+        successCard.classList.add("waitlist");
+        successTitle.textContent = "備取登記成功";
+        successMessage.textContent =
+          "系統已收到你的備取資料。備取不占正式名額，請先不要匯款。";
+        successDetail.innerHTML =
+          `目前備取順位：第 ${result.waitlist_position || "—"} 組<br>` +
+          `若後續有合適名額，會由瑋瑋老師人工判斷是否轉為正取。` +
+          `<br><a href="mailto:wesker.hung@outlook.com" style="color:inherit;text-decoration:underline;font-weight:800;">與瑋瑋老師聯繫</a>`;
+      } else {
+        successTitle.textContent = "報名資料已送出・待付款";
+        successMessage.textContent =
+          "系統已暫時保留本次名額，確認信會寄到剛才填寫的 E-mail。完成付款並經確認後，報名狀態會更新為「已確認」。";
+        successDetail.textContent =
+          `付款提醒期限：${formatDateTime(result.payment_due_at)}\n` +
+          `原則上請於報名後 5 日內完成付款；逾期未付款者，主辦方得視名額與實際聯繫情形取消報名並釋出名額。`;
+      }
+
       formCard.style.display = "none";
       successCard.classList.add("show");
 
