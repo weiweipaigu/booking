@@ -199,6 +199,28 @@
       color:#8a6a1f;
     }
 
+    .status-badge.waitlisted{
+      background:#f4efe2;
+      color:#7a6236;
+    }
+
+    .lookup-status-note{
+      margin:12px 0 18px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fbfbf8;
+      color:var(--muted);
+      white-space:pre-line;
+    }
+
+    .lookup-status-note a{
+      color:var(--accent);
+      font-weight:800;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
     .info-grid{
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
@@ -387,6 +409,7 @@
 
           <section id="resultCard" class="result-card" aria-live="polite">
             <div id="statusBadge" class="status-badge"></div>
+            <div id="statusNote" class="lookup-status-note"></div>
 
             <h2 id="eventTitle"></h2>
 
@@ -472,6 +495,17 @@
       return value ? String(value).slice(0,5) : "";
     }
 
+    function formatDateTime(value){
+      if(!value) return "—";
+      return new Intl.DateTimeFormat("zh-TW", {
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit",
+        hour:"2-digit",
+        minute:"2-digit"
+      }).format(new Date(value));
+    }
+
     function setMessage(text){
       message.textContent = text;
       message.className = text ? "message error" : "message";
@@ -479,11 +513,15 @@
 
     function statusInfo(status){
       if(status === "confirmed"){
-        return {text:"報名成功", className:"status-badge"};
+        return {text:"已確認", className:"status-badge"};
       }
 
       if(status === "pending"){
-        return {text:"處理中", className:"status-badge pending"};
+        return {text:"待付款", className:"status-badge pending"};
+      }
+
+      if(status === "waitlisted"){
+        return {text:"備取中", className:"status-badge waitlisted"};
       }
 
       if(status === "cancelled"){
@@ -500,6 +538,26 @@
       const badge = document.getElementById("statusBadge");
       badge.textContent = status.text;
       badge.className = status.className;
+
+      const statusNote = document.getElementById("statusNote");
+
+      if(data.status === "pending"){
+        statusNote.textContent =
+          `付款提醒期限：${formatDateTime(data.payment_due_at)}
+` +
+          `若尚未完成付款，請依確認信中的付款資訊處理；如需確認付款或報名狀況，可與瑋瑋老師聯繫。`;
+      }else if(data.status === "waitlisted"){
+        statusNote.innerHTML =
+          `目前為第 <strong>${data.waitlist_position || "—"}</strong> 組備取。` +
+          `備取期間請先不要匯款；若有名額釋出，會由瑋瑋老師人工判斷是否轉為正取。` +
+          `<br><a href="mailto:wesker.hung@outlook.com">與瑋瑋老師聯繫</a>`;
+      }else if(data.status === "confirmed"){
+        statusNote.textContent = "這筆報名目前已完成確認。";
+      }else if(data.status === "cancelled"){
+        statusNote.textContent = "這筆報名目前已取消，不再占用活動名額。";
+      }else{
+        statusNote.textContent = "";
+      }
 
       document.getElementById("eventTitle").textContent = event.title || "活動";
       document.getElementById("eventDate").textContent = formatDate(event.event_date);
